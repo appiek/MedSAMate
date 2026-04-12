@@ -69,19 +69,17 @@ error.SetGlobalWarningDisplay(0)  # 关闭vtk报错信息
 def BoundingBox_Coordinate(Seg, offset=20):
     """计算分割结果的3D边界框坐标"""
     H, W, C = Seg.shape
-    Mask = np.sum(Seg > 0, 2)  # 沿Z轴求和，得到2D掩码
-    Mask_H = np.sum(Mask, 1) > 0  # 行方向有像素的位置
+    Mask = np.sum(Seg > 0, 2)
+    Mask_H = np.sum(Mask, 1) > 0
     indx_H = np.where(Mask_H)
-    Mask_V = np.sum(Mask, 0) > 0  # 列方向有像素的位置
+    Mask_V = np.sum(Mask, 0) > 0
     indx_V = np.where(Mask_V)
-    # 计算2D边界框（带偏移，防止超出图像）
     TL_x = max(np.min(indx_H) - offset, 0)
     TL_y = max(np.min(indx_V) - offset, 0)
     BR_x = min(np.max(indx_H) + offset, H)
     BR_y = min(np.max(indx_V) + offset, W)
-    # 计算Z轴方向的边界
-    Mask = np.sum(np.sum(Seg > 0, 0), 0)  # 沿H和W轴求和，得到Z轴掩码
-    mask_id_list = np.where(Mask > 0)
+    mask_sum = np.sum(Seg > 0, axis=(0, 1))
+    mask_id_list = np.where(mask_sum > 0)
     mask_id_low = min(np.max(mask_id_list) + offset, C)
     mask_id_up = max(np.min(mask_id_list) - offset, 0)
 
@@ -267,16 +265,10 @@ def drawimplant_coordinate(drawpaper_size, drawimplant_len, drawimplant_width):
     return coords_list
 
 
-def MaxMin_normalization_Intensity(I, Max_Minval, Min_Maxval):
+def MaxMin_normalization_Intensity(I, max_min_val, min_max_val):
     """最大最小值归一化"""
-    # ======================
-    # I: HxW
-    # ======================
-    Ic = np.where(I > Min_Maxval, Min_Maxval, I)  # 截断上限
-    Ic = np.where(Ic < Max_Minval, Max_Minval, Ic)  # 截断下限
-    II = (Ic - Max_Minval) / (Min_Maxval - Max_Minval + 0.00001)  # 归一化到[0，1]
-
-    return II
+    Ic = np.clip(I, max_min_val, min_max_val)
+    return (Ic - max_min_val) / (min_max_val - max_min_val + 1e-6)
 
 
 class Ui_MainWindow(QObject):
