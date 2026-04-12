@@ -228,25 +228,22 @@ def LevelAndWidth(self):
 
 def polar360(x_input, y_input, x_ori=0, y_ori=0):
     """极坐标转换"""
-    x = x_input - x_ori  # 相对原点的x偏移
-    y = y_input - y_ori  # 相对原点的y偏移
-    rdius = math.hypot(y, x)  # 半径
-    theta = math.degrees(math.atan2(x, y)) + (x < 0) * 360  # 角度（调整为0-360度）
-    return rdius, theta
+    x = x_input - x_ori
+    y = y_input - y_ori
+    radius = math.hypot(y, x)
+    theta = math.degrees(math.atan2(x, y)) + (x < 0) * 360
+    return radius, theta
 
 
 def rotation_shape(coords_list, coords_origin, rotation_angle):
     """坐标旋转"""
     rotation_coords_list = []
     for i in range(len(coords_list)):
-        # 计算极坐标
         coords = coords_list[i]
-        rdius, theta = polar360(coords[0], coords[1], coords_origin[0], coords_origin[1])
-        # 旋转后坐标
-        x_r = np.int32(coords_origin[0] + rdius * math.sin((theta + rotation_angle) / 180 * math.pi))
-        y_r = np.int32(coords_origin[1] + rdius * math.cos((theta + rotation_angle) / 180 * math.pi))
+        radius, theta = polar360(coords[0], coords[1], coords_origin[0], coords_origin[1])
+        x_r = np.int32(coords_origin[0] + radius * math.sin((theta + rotation_angle) / 180 * math.pi))
+        y_r = np.int32(coords_origin[1] + radius * math.cos((theta + rotation_angle) / 180 * math.pi))
         rotation_coords_list.append([x_r, y_r])
-
     return rotation_coords_list
 
 
