@@ -100,7 +100,7 @@ def savestl(mask, spacing, subjname, savepath, smoothfactor=2.0):
     print(f"[STL] Bounding box: X[{TL_x}:{BR_x}], Y[{TL_y}:{BR_y}], Z[{mask_id_up}:{mask_id_low}]")
     
     # 获取边界框，裁剪掩码以加速处理
-    seg = np.float32(mask[TL_x:BR_x, TL_y: BR_y, mask_id_up:mask_id_low] > 0)
+    seg = np.float32(mask[TL_x:BR_x, TL_y:BR_y, mask_id_up:mask_id_low] > 0)
     print(f"[STL] Cropped seg shape: {seg.shape}, min={seg.min()}, max={seg.max()}")
     
     # 高斯平滑
